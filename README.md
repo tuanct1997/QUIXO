@@ -1,0 +1,2 @@
+# QUIXO
+Quixo-MINIMAX
