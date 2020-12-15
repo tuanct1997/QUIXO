@@ -68,7 +68,7 @@ class GraphicalView(object):
     	for image in ls:
     		x,y,IMAGE = image
     		self.screen.blit(IMAGE,(x-(500//5//2),y-(500//5//2)))
-    		pygame.display.flip()
+    	pygame.display.update()	
 
     def draw_line(self):
     	gap = 500 // 5

@@ -13,7 +13,8 @@ class GameEngine(object):
     my = None
     # dis_to_cent = 500//5//2
     x_turn = None
-    board = deepcopy(game_array)
+    board = [[(50, 50, 0), (150, 50, 0), (250, 50, 0), (350, 50, 0), (450, 50, 0)], [(50, 150, 0), (150, 150, 0), (250, 150, 0), (350, 150, 0), (450, 150, 0)], [(50, 250, 0), (150, 250, 0), (250, 250, 0), (350, 250, 0), (450, 250, 0)], [(50, 350, 0), (150, 350, 0), (250, 350, 0), (350, 350, 0), (450, 350, 0)], [(50, 450, 0), (150, 450, 0), (250, 450, 0), (350, 450, 0), (450, 450, 0)]]
+
 
     # o_turn = None
     
@@ -40,123 +41,134 @@ class GameEngine(object):
         self.click = True
         # self.o_turn = False
 
-    def create_board(self):
-    	return [[0 for j in range(self.rows)] for i in range(self.rows)]
+    # def create_board(self):
+    # 	return [[0 for j in range(self.rows)] for i in range(self.rows)]
 
     def is_movable_tile(self,i, j):
-        if i in range(1,self.rows-1) and (j == 0 or j == self.rows-1):
+        if i in [50,150,250,350,450] and (j == 50 or j == 450):
             return True
-        elif (i == 0 or i == self.rows-1 ) and j in range(0,self.rows):
+        elif (i == 50 or i == 450 ) and j in [50,150,250,350,450]:
             return True
         else:
             return False
 
-    def get_possibles_destinations(board, x, y):
-	    destinations = []
+    def is_placeable_tile(self,i, j,xstart,ystart):
+        if xstart in [50,450] and ystart in [50,450]:
+            if i in [50,450] and j in [50,450] and (i != xstart or j != ystart):
+                return True
+            else:
+                return False
+        else:
+            return False
 
-	    if x == 0 or x == self.rows-1:
-	        if y != 0:
-	            destinations.append((x, 0))
-	        if y != self.rows-1:
-	            destinations.append((x, self.rows-1))
-	        opposite = 0 if x == self.rows-1 else self.rows-1
-	        destinations.append((opposite, y))
+    # def have_won(self,game_array1):
+    #     for x in range(len(game_array1)):
+    #         for j in range(len(game_array1[x])):
+    #             if
+    #             pass
+    #         pass
 
-	    if (y == 0 or y == self.rows-1) and (x != 0 and x != self.rows-1):
-	        if x != 0:
-	            destinations.append((0, y))
-	        if x != self.rows-1:
-	            destinations.append((self.rows-1, y))
-	        opposite = 0 if y == self.rows-1 else self.rows-1
-	        destinations.append((x, opposite))
-
-	    return destinations
-
-    def grid(self):
-        dis_to_cent = self.width // self.rows // 2
-        game_array = []
-        array_temp = []
-        for i in range(self.rows):
-            for j in range(self.rows):
-            	x = dis_to_cent*(2*j+1)
-            	y = dis_to_cent*(2*i+1)
-
-            	array_temp.append((x,y,"",True))
-            game_array.append(array_temp)
-            array_temp = []
-
-        return game_array, dis_to_cent
-
-    def is_available(self,game_array,mx,my, dis_to_cent):
-        for i in range(len(game_array)):
-            for j in range(len(game_array[i])):
-                x,y,char = game_array[i][j]
+    def is_available(self,game_array1,mx,my, dis_to_cent):
+        for i in range(len(game_array1)):
+            for j in range(len(game_array1[i])):
+                x,y,char = game_array1[i][j]
+                print("THIS IS X {} and Y {} and CHAR {}".format(x,y,char))
                 dis = math.sqrt((x-mx)**2 + (y-my) ** 2)
                 if dis <= dis_to_cent:
-                    if self.is_movable_tile(i,j):
+                    print("LOL~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+                    if self.is_movable_tile(x,y):
                         if self.x_turn:
                             if char == 0 or char == 1:
-                                game_array[i][j] = (x,y,0)
                                 return True,x,y
                         else:
                             if char == 0 or char == -1:
-                                game_array[i][j] = (x,y,0)
                                 return True,x,y
                     # else:
                     #     print("This is {}".format(x))
         return False,x,y
 
-    def update_col(self,game_array,xstart):
-        print("BEFORE {}".format(game_array))
-        temp = deepcopy(game_array)
-        for z in range(len(game_array)):
-            for d in range(len(game_array[z])):
+    def update_col(self,game_array1,xstart,yend,ystart):
+        print("BEFORE {}".format(game_array1))
+        temp = deepcopy(game_array1)
+        for z in range(len(game_array1)):
+            for d in range(len(game_array1[z])):
                 print("this is DDDDD {}".format(d))
-                x1,y1,char = game_array[z][d]
+                x1,y1,char = game_array1[z][d]
                 if d == 4:
                     print('mommmmmm')
-                if x1 == xstart and d!=4:
-                    y1+= 100
-                    temp[z][d] =(x1,y1,char)
-                elif x1 ==xstart and d==4:
-                    y1 -=400
-                    print("LOLL")
-                    temp[z][d] = (x1,y1,char)
-        game_array = temp
-        print(game_array)
+                    print("y1 là {}".format(y1))
+                    print("yend là {}".format(yend))
+                if yend > ystart:
+                    if x1 == xstart and y1 > ystart:
+                        y1-= 100
+                        temp[z][d] =(x1,y1,char)
+                    elif x1 ==xstart and y1==ystart:
+                        y1 += yend - ystart
+                        print("y1 là {}".format(y1))
+                        print("yend là {}".format(yend))
+                        print("LOLL")
+                        temp[z][d] = (x1,y1,char)
+                elif yend < ystart:
+                    if x1 == xstart and y1 < ystart:
+                        y1 += 100
+                        temp[z][d] =(x1,y1,char)
+                    elif x1 ==xstart and y1 == ystart:
+                        y1 -= ystart - yend
+                        print("LOLL")
+                        temp[z][d] = (x1,y1,char)
+        game_array1 = deepcopy(temp)
+        print("THIS SHITTTTTTT HAHAHAHA {}".format(game_array1))
+        return game_array1
 
-    def update_row(self,game_array,ystart):
-        temp = deepcopy(game_array)
-        for z in range(len(game_array)):
-            for d in range(len(game_array[z])):
-                x1,y1,char = game_array[z][d]
-                if y1 == ystart and z!=4:
-                    x1+= 100
-                    temp[z][d] =(x1,y1,char)
-                elif y1 ==ystart and z==4:
-                    x1 -=400
-                    temp[z][d] =(x1,y1,char)
-        game_array = temp
+    def update_row(self,game_array1,ystart,xend,xstart):
+        print("BEFORE {}".format(game_array1))
+        temp = deepcopy(game_array1)
+        for z in range(len(game_array1)):
+            for d in range(len(game_array1[z])):
+                print("this is DDDDD {}".format(d))
+                x1,y1,char = game_array1[z][d]
+                if xend > xstart:
+                    if y1 == ystart and x1 > xstart:
+                        x1-= 100
+                        temp[z][d] =(x1,y1,char)
+                    elif y1 ==ystart and x1==xstart:
+                        x1 += xend - xstart
+                        print("y1 là {}".format(y1))
+                        print("yend là {}".format(xend))
+                        print("LOLL")
+                        temp[z][d] = (x1,y1,char)
+                elif xend < xstart:
+                    if y1 == ystart and x1 < xstart:
+                        x1 += 100
+                        temp[z][d] =(x1,y1,char)
+                    elif y1 ==ystart and x1 == xstart:
+                        x1 -= xstart - xend
+                        print("LOLL")
+                        temp[z][d] = (x1,y1,char)
+        game_array1 = deepcopy(temp)
+        print("THIS SHITTTTTTT HAHAHAHA {}".format(game_array1))
+        return game_array1
 
-    def putxlist(self,game_array,temp):
+    def putxlist(self,game_array1,temp):
         xcheck,ycheck,char = temp
         print("DMCMMMM DAY LA CHAR {}".format(char))
-        for z in range(len(game_array)):
-            for d in range(len(game_array[z])):
-                x,y,char = game_array[z][d]
+        for z in range(len(game_array1)):
+            for d in range(len(game_array1[z])):
+                x,y,char = game_array1[z][d]
                 if xcheck == x and ycheck == y:
                     print('kkokokokokokokokoko')
-                    game_array[z][d] = (xcheck,ycheck,1)
-                    return
-    def putolist(self,game_array,temp):
+                    game_array1[z][d] = (xcheck,ycheck,1)
+                    return game_array1
+
+    def putolist(self,game_array1,temp):
         xcheck,ycheck,char = temp
         print("DMCMMMM DAY LA CHAR {}".format(char))
-        for z in range(len(game_array)):
-            for d in range(len(game_array[z])):
-                x,y,char = game_array[z][d]
+        for z in range(len(game_array1)):
+            for d in range(len(game_array1[z])):
+                x,y,char = game_array1[z][d]
                 if xcheck == x and ycheck == y:
-                    game_array[z][d] = (xcheck,ycheck,-1)
-                    return
+                    game_array1[z][d] = (xcheck,ycheck,-1)
+                    return game_array1
 
     def is_move(self,game_array,mx,my,dis_to_cent, xstart, ystart):
         for i in range(len(game_array)):
@@ -164,21 +176,24 @@ class GameEngine(object):
                 x,y,char = game_array[i][j]
                 dis = math.sqrt((x-mx)**2 + (y-my)**2)
                 if dis<=dis_to_cent:
-                    
-                    if self.is_movable_tile(i,j):
+                    # ,xstart,ystart
+                    if self.is_movable_tile(x,y):
                         if x == xstart:
-                            self.update_col(game_array,xstart)
+                            GameEngine.board = self.update_col(GameEngine.board,xstart,y,ystart)
                             print(game_array)
+                            print("eqoeioqweioqwieqoweiqwoeiqwoeiqwoeqwieoqwiqwoeiqooeiq")
                             print('=============================================================================')
                             if self.x_turn:
+                                print("THIS IS TRUE game_array {}".format(GameEngine.board))
                                 tempx= [x,y,1]
-                                self.putxlist(game_array,tempx)
+                                GameEngine.board = self.putxlist(GameEngine.board,tempx)
                                 self.x_turn = False
-                                print("THIS IS TRUE game_array {}".format(game_array))
+                                print("THIS IS TRUE game_array {}".format(GameEngine.board))
                                 return True,x,y
                             else:
+                                print("THIS IS TRUE game_array {}".format(game_array))
                                 tempx = [x,y,-1]
-                                self.putolist(game_array,tempx)
+                                GameEngine.board = self.putolist(GameEngine.board,tempx)
                                 print("THIS IS TRUE game_array {}".format(game_array))
                                 self.x_turn = True
                                 return True,x,y
@@ -186,12 +201,16 @@ class GameEngine(object):
                         elif y == ystart:
                             print(game_array)
                             print('=============================================================================')
-                            self.update_row(game_array,ystart)
+                            GameEngine.board = self.update_row(GameEngine.board,ystart,x,xstart)
                             if self.x_turn:
-                                game_array[i][j] = (x,y,1)
+                                tempx= [x,y,1]
+                                GameEngine.board = self.putxlist(GameEngine.board,tempx)
+                                self.x_turn = False
                                 return True,x,y
                             else:
-                                game_array[i][j] = (x,y,-1)
+                                tempx = (x,y,-1)
+                                GameEngine.board = self.putolist(GameEngine.board,tempx)
+                                self.x_turn = True
                                 return True,x,y
         return False,x,y
 
@@ -204,10 +223,9 @@ class GameEngine(object):
 
         if isinstance(event,ClickEvent):
             m_x, m_y = event.clickpos
-            print("========{}=========".format(m_x))
-            print("========{}=========".format(m_y))
-            print("this is game_array{}".format(game_array))
-            is_a,x,y= self.is_available(game_array, m_x,m_y,dis_to_cent)
+            print("FORMAT BOARD LA {}".format(GameEngine.board))
+            is_a,x,y= self.is_available(GameEngine.board, m_x,m_y,dis_to_cent)
+            print("THIS IS IS_A {}".format(is_a))
             if is_a:
                 self.draw = -1
                 self.mx = m_x
@@ -225,17 +243,21 @@ class GameEngine(object):
                 print('PLACE EVENT {}'.format(m_x))
                 print("PLACE EVENT 2---{}".format(m_y))
                 is_place , x , y = self.is_move(game_array,m_x,m_y,dis_to_cent,xstart,ystart)
+                # game_array = GameEngine.board
                 if is_place:
                     self.draw = 1
                     self.mx = m_x
                     self.my = m_y
                     image_xo.clear()
-                    for i in range(len(game_array)):
-                        for j in range(len(game_array[i])):
-                            x,y,char = game_array[i][j]
+                    print("GAME ENGINE {}".format(GameEngine.board))
+                    for i in range(len(GameEngine.board)):
+                        for j in range(len(GameEngine.board[i])):
+                            x,y,char = GameEngine.board[i][j]
                             if char == 1:
+                                print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
                                 image_xo.append([x,y,X_IMAGE])
                             elif char == -1:
+                                print("~~~~~~~~~~~~~~~~~~~~oooo~~~~~~~~~~~~~~~~~~")
                                 image_xo.append([x,y,O_IMAGE])
  
             else:
