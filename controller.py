@@ -2,15 +2,16 @@ import pygame
 import model
 from eventmanager import *
 
-class Keyboard(object):
+
+class Controller(object):
     """
     Handles keyboard input.
     """
 
     def __init__(self, evManager, model):
         """
-        evManager (EventManager): Allows posting messages to the event queue.
-        model (GameEngine): a strong reference to the game Model.
+        evManager (EventManager): push messages to the event queue in Observer pattern.
+        model (GameEngine): Game Model.
         """
         self.evManager = evManager
         evManager.RegisterListener(self)
@@ -33,13 +34,11 @@ class Keyboard(object):
                         self.evManager.Post(QuitEvent())
                     else:
                         # post any other keys to the message queue for everyone else to see
-                        self.evManager.Post(InputEvent(event.unicode,None))
-
+                        self.evManager.Post(InputEvent(event.unicode, None))
+                # cCheck Mouse button for first move
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                	self.evManager.Post(ClickEvent(event, pygame.mouse.get_pos()))
-                	# print('-------------------')
-                	# print(self.model.mx)
-                	# print(self.model.my)
-                	# print('-------------------')
+                    self.evManager.Post(ClickEvent(event, pygame.mouse.get_pos()))
+
+                # Check release Mouse button for second move
                 if event.type == pygame.MOUSEBUTTONUP:
-                	self.evManager.Post(PlaceEvent(event,pygame.mouse.get_pos()))
+                    self.evManager.Post(PlaceEvent(event, pygame.mouse.get_pos()))

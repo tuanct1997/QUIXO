@@ -2,14 +2,13 @@ import pygame
 import model
 from eventmanager import *
 
-
-
 # Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (200, 200, 200)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
+
 
 class GraphicalView(object):
     """
@@ -27,7 +26,7 @@ class GraphicalView(object):
         clock (pygame.time.Clock): keeps the fps constant.
         smallfont (pygame.Font): a small font.
         """
-        
+
         self.evManager = evManager
         evManager.RegisterListener(self)
         self.model = model
@@ -35,55 +34,61 @@ class GraphicalView(object):
         self.screen = None
         self.clock = None
         self.smallfont = None
-    
+
     def notify(self, event):
         """
         Receive events posted to the message queue. 
         """
 
         if isinstance(event, InitializeEvent):
-            self.initialize(self.model.width,self.model.rows)
+            self.initialize(self.model.width, self.model.rows)
         elif isinstance(event, QuitEvent):
             # shut down the pygame graphics
             self.isinitialized = False
             pygame.quit()
 
         elif isinstance(event, TickEvent):
-            # self.renderall()
             # limit the redraw speed to 30 frames per second
             self.clock.tick(30)
-        # elif isinstance(event,DrawXOEvent):
 
-        elif isinstance(event,DrawBlankEvent):
-        	print('123213213')
-        	self.drawblank(event.ls)
+        elif isinstance(event, DrawBlankEvent):
+            self.drawblank(event.ls)
 
+        elif isinstance(event, DrawWinEvent):
+            self.drawwin()
 
+    #function create message when there is a winner
+    def drawwin(self):
+        somewords = self.smallfont.render(
+            'GAME OVER',
+            True,
+            (0, 255, 0))
+        self.screen.blit(somewords, (250, 250))
+        pygame.display.update()
 
+    #Function to draw animation on the board
+    def drawblank(self, ls):
+        self.screen.fill((0, 0, 0))
+        print('this is ls {}'.format(ls))
+        self.draw_line()
+        for image in ls:
+            x, y, IMAGE = image
+            self.screen.blit(IMAGE, (x - (500 // 5 // 2), y - (500 // 5 // 2)))
+        pygame.display.update()
 
-    def drawblank(self,ls):
-    	self.screen.fill((0,0,0))
-    	print('this is ls {}'.format(ls))
-    	self.draw_line()
-    	for image in ls:
-    		x,y,IMAGE = image
-    		self.screen.blit(IMAGE,(x-(500//5//2),y-(500//5//2)))
-    	pygame.display.update()	
-
+    # Function to create line on the board
     def draw_line(self):
-    	gap = 500 // 5
-    	x = 0
-    	y= 0
-    	for i in range(5):
-    		x = i * gap
-    		pygame.draw.line(self.screen, GRAY, (x,0), (x, 500), 5)
-    		pygame.draw.line(self.screen, GRAY, (0,x), (500, x), 5)
-    	pygame.display.update()
+        gap = 500 // 5
+        x = 0
+        y = 0
+        for i in range(5):
+            x = i * gap
+            pygame.draw.line(self.screen, GRAY, (x, 0), (x, 500), 5)
+            pygame.draw.line(self.screen, GRAY, (0, x), (500, x), 5)
+        pygame.display.update()
 
-    def initialize(self,c,r):
-        """
-        Set up the pygame graphical display and loads graphical resources.
-        """
+    # Initialize the screen
+    def initialize(self, c, r):
 
         result = pygame.init()
         pygame.font.init()
@@ -92,22 +97,16 @@ class GraphicalView(object):
         self.clock = pygame.time.Clock()
         self.smallfont = pygame.font.Font(None, 40)
         self.isinitialized = True
-        self.screen.fill((0,0,0))
+        self.screen.fill((0, 0, 0))
 
         gap = c // r
 
         x = 0
-        y= 0
+        y = 0
 
         for i in range(r):
-        	x = i * gap
-        	pygame.draw.line(self.screen, GRAY, (x,0), (x, c), r)
-        	pygame.draw.line(self.screen, GRAY, (0,x), (c, x), r)
+            x = i * gap
+            pygame.draw.line(self.screen, GRAY, (x, 0), (x, c), r)
+            pygame.draw.line(self.screen, GRAY, (0, x), (c, x), r)
 
-       	pygame.display.update()
-       	
-
-
-
-
-
+        pygame.display.update()
