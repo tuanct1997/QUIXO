@@ -3,5 +3,8 @@ Quixo-MINIMAX
 
 Using Pygame for UI 
 
-For play :
-python mainMVC.py 
+For play:
+
+```bash
+$python mainMVC.py
+```
